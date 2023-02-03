@@ -24,6 +24,7 @@ func main() {
 	}
 	defer ui.Close()
 
+	// listen tcp of net/http
 	ln, err := net.Listen("tcp", "127.0.0.1:8080")
 	if err != nil {
 		log.Fatal(err)
@@ -45,26 +46,4 @@ func main() {
 	case <-chSignal:
 	case  <-ui.Done():
 	}
-		
-	// go func(){ // gin 协程
-	// 	gin.SetMode(gin.DebugMode)
-	// 	router := gin.Default()
-	// 	router.GET("/",func(ctx *gin.Context) {
-	// 		ctx.Writer.Write([]byte("hellogin"))
-	// 	})
-	// 	router.Run(":8080")
-	// }()
-	// // 监听 ctrl c
-	// chSignal := make(chan os.Signal, 1)
-	// signal.Notify(chSignal, os.Interrupt)
-
-	// chromePath := "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe"
-	// cmd := exec.Command(chromePath, "--app=http:127.0.0.1:8080/")
-	// cmd.Start()
-	// fmt.Println(cmd.Process.Pid)
-	// // 等待ctrl c信号
-	// <-chSignal // 表示从chSignal里读值，该过程是阻塞的，没有读到值就一直等
-	// err := cmd.Process.Kill().Error()
-	// fmt.Println("err: ", err)
-	// fmt.Println("Process killed with PID: ", cmd.Process.Pid)
 }
