@@ -33,13 +33,12 @@ func main() {
 	// 使用
 	staticFiles, _ := fs.Sub(FS, "frontend/dist")
 	go http.Serve(ln, http.FileServer(http.FS(staticFiles)))
+	fmt.Println(fmt.Sprintf("http://%s/", ln.Addr()))
 	ui.Load(fmt.Sprintf("http://%s/", ln.Addr()))
-
 
 	// 监听 ctrl c
 	chSignal := make(chan os.Signal, 1)
 	signal.Notify(chSignal, os.Interrupt)
-
 
 	// Wait until UI window is closed or Terminal input Ctrl+C
 	select{
