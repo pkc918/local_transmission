@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
-	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,6 +14,7 @@ import (
 
 //go:embed frontend/dist/*
 var FS embed.FS
+const serverPort int = 8080
 
 func main() {
 	// Create instance lorca
@@ -24,18 +24,23 @@ func main() {
 	}
 	defer ui.Close()
 
-	// listen tcp of net/http
-	ln, err := net.Listen("tcp", "127.0.0.1:8080")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer ln.Close()
-	
-	// 使用
-	staticFiles, _ := fs.Sub(FS, "frontend/dist")
-	go http.Serve(ln, http.FileServer(http.FS(staticFiles)))
-	fmt.Println(fmt.Sprintf("http://%s/", ln.Addr()))
-	ui.Load(fmt.Sprintf("http://%s/", ln.Addr()))
+	// go 协程
+	go func ()  {
+		mux := http.NewServeMux()
+		staticFiles, _ := fs.Sub(FS, "frontend/dist")
+		mux.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.FS(staticFiles))))
+		
+		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Printf("server: %s /\n", r.Method)
+			fmt.Fprint(w, "Hello Go")
+		})
+		server := &http.Server{
+			Addr:    fmt.Sprintf(":%d", serverPort),
+			Handler: mux,
+		}
+		go server.ListenAndServe()
+		ui.Load(fmt.Sprintf("http://127.0.0.1:%d/static/", serverPort))
+	}()
 
 	// 监听 ctrl c
 	chSignal := make(chan os.Signal, 1)
