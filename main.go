@@ -30,10 +30,23 @@ func main() {
 		staticFiles, _ := fs.Sub(FS, "frontend/dist")
 		mux.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.FS(staticFiles))))
 		
-		mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Printf("server: %s /\n", r.Method)
-			fmt.Fprint(w, "Hello Go")
+		mux.HandleFunc("/api/v1/", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Printf("Path: %s \n", string([]rune(r.URL.Path)[7:]))
+			if r.Method == "GET" {
+				switch string([]rune(r.URL.Path)[7:]){
+				case "/1":
+				fmt.Fprint(w, "1号接口")
+				}
+				return
+			} else if r.Method == "POST" {
+				switch string([]rune(r.URL.Path)[7:]){
+				case "/1":
+				   fmt.Fprint(w, "1号接口")
+				}
+				return
+			}
 		})
+		
 		server := &http.Server{
 			Addr:    fmt.Sprintf(":%d", serverPort),
 			Handler: mux,
