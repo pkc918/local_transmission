@@ -14,7 +14,7 @@ import (
 
 //go:embed frontend/dist/*
 var FS embed.FS
-const serverPort int = 8080
+const serverPort int = 27149
 
 func main() {
 	// Create instance lorca
@@ -40,8 +40,8 @@ func main() {
 				return
 			} else if r.Method == "POST" {
 				switch string([]rune(r.URL.Path)[7:]){
-				case "/1":
-				   fmt.Fprint(w, "1号接口")
+				case "/2":
+				   fmt.Fprint(w, "2号接口")
 				}
 				return
 			}
@@ -52,7 +52,7 @@ func main() {
 			Handler: mux,
 		}
 		go server.ListenAndServe()
-		ui.Load(fmt.Sprintf("http://127.0.0.1:%d/static/", serverPort))
+		ui.Load(fmt.Sprintf("http://127.0.0.1:%d/static", serverPort))
 	}()
 
 	// 监听 ctrl c
